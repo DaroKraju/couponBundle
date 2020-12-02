@@ -1,0 +1,46 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+
+parameters:
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        # automatically injects dependencies in your services
+        autowire: true
+        # automatically registers your services as commands, event subscribers, etc.
+        autoconfigure: true
+        # this means you cannot fetch services directly from the container via $container->get()
+        # if you need to do this, you can override this setting on individual services
+        public: false
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Domain\CouponOrderRepository: '@Noclegowo\Editpanel\Core\Module\Coupon\Infrastructure\Persistence\Doctrine\CouponOrderDoctrineRepository'
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Query\CouponOrder\:
+        resource: '../../../../Query/CouponOrder/{CouponOrderQuery}*'
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Query\CouponOrder\Result\:
+        resource: '../../../../Query/CouponOrder/Result/*'
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Infrastructure\Persistence\Doctrine\:
+        resource: '../../../../Infrastructure/Persistence/Doctrine/*'
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Query\CouponOrder\CouponOrderQuery:
+        arguments:
+            $couponOrderRepository: '@Noclegowo\Editpanel\Core\Module\Coupon\Infrastructure\Persistence\Doctrine\CouponOrderDoctrineRepository'
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Application\CouponApplicationService:
+        autowire: true
+        public: true
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Domain\Order\CouponPdfService:
+        autowire: true
+        public: true
+
+    Noclegowo\Editpanel\Core\Module\Coupon\Infrastructure\Email\CouponEmailService:
+        autowire: false
+        public: true
+        arguments:
+            $query: '@IturDev\Query\QueryRegistry'
+            $mailer: '@Noclegowo\Editpanel\Core\Module\Email\MailerInterface'
+            $couponPdfService: '@Noclegowo\Editpanel\Core\Module\Coupon\Domain\Order\CouponPdfService'
